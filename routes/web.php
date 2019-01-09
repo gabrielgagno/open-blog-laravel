@@ -10,7 +10,9 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-
+use App\Classes\Logger;
 Route::get('/', function () {
+    $logger = new Logger();
+    $logger->logInfo('/', "tried logger");
     return view('welcome');
 });
