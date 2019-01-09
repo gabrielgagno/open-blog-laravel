@@ -17,12 +17,12 @@ class LogMiddleware
      */
     public function handle($request, Closure $next)
     {
-        Log::info('app.request', ['request' => $request->all(), 'header' => $request->headers->all()]);
+        Log::info('openblog.request', ['request' => $request->all(), 'header' => $request->headers->all()]);
         return $next($request);
     }
 
     public function terminate($request, JsonResponse $response)
     {
-        Log::info('app.response', ['response' => $response->getContent(), 'header' => $response->headers->all()]);
+        Log::info('openblog.response', ['response' => $response->getContent(), 'header' => $response->headers->all()]);
     }
 }
