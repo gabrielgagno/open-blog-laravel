@@ -21,7 +21,7 @@ class LogMiddleware
         return $next($request);
     }
 
-    public function terminate($request, JsonResponse $response)
+    public function terminate($request, Response $response)
     {
         Log::info('openblog.response', ['response' => $response->getContent(), 'header' => $response->headers->all()]);
     }
