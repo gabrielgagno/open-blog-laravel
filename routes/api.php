@@ -20,5 +20,8 @@ Route::middleware('api')->get('/user', function (Request $request) {
 Route::middleware('api')->group(function() {
     Route::prefix('posts')->group(function() {
         Route::get('/', 'PostController@index');
+        Route::post('/', 'PostController@store');
+        Route::put('/{post}', 'PostController@update');
+        Route::delete('/{post}', 'PostController@destroy');
     });
 });

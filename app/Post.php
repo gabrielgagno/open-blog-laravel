@@ -12,6 +12,7 @@ class Post extends Model
         'body',
         'tags',
         'status',
+        'published_at'
     ];
 
     public function user()
