@@ -12,7 +12,6 @@ class PostController extends Controller
     public function index(Request $request)
     {
         $posts = Post::get();
-        //dd(response()->json($this->responseBuilder->resSuccess($posts)));
         return response()->json($this->responseBuilder->resSuccess($posts->toArray()));
     }
 
