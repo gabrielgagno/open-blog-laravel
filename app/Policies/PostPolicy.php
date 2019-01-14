@@ -35,11 +35,19 @@ class PostPolicy
 
     public function update(User $user, Post $post) {
         $hasAccess = $user->hasAccess('update-posts');
-        return $hasAccess;
+        if($this->manageOther($user)) {
+            return $hasAccess;
+        }
+
+        return $user->id == $post->user_id;
     }
 
     public function delete(User $user, Post $post) {
-        $hasAccess = $user->hasAccess('update-posts');
-        return $hasAccess;
+        $hasAccess = $user->hasAccess('delete-posts');
+        if($user->can('manage-other')) {
+            return $hasAccess;
+        }
+
+        return $user->id == $post->user_id;
     }
 }

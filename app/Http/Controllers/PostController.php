@@ -13,7 +13,7 @@ class PostController extends Controller
     public function index(Request $request)
     {
         if(Auth::user()->cant('view', Post::class)) {
-            abort(401);
+            return response()->json($this->responseBuilder->resError("You are not permitted to do this operation", 401, "01"));
         }
         $posts = Post::get();
         return response()->json($this->responseBuilder->resSuccess($posts->toArray()));
@@ -22,15 +22,11 @@ class PostController extends Controller
     public function store(Request $request)
     {
         if(Auth::user()->cant('create', Post::class)) {
-            abort(401);
+            return response()->json($this->responseBuilder->resError("You are not permitted to do this operation", 401, "01"));
         }
         $input = $request->all();
 
         // TODO validate here
-
-        if(Auth::user()->cant('manage-other', Post::class) && Auth::user()->id != $input['user_id']) {
-            abort(401);
-        }
 
         if($input['status'] == 'published') {
             $input['published_at'] = date('Y-m-d H:i:s');
@@ -50,16 +46,11 @@ class PostController extends Controller
 
     public function update(Request $request, Post $post)
     {
-        if(Auth::user()->cant('update', Post::class)) {
-            abort(401);
+        if(Auth::user()->cant('update', $post)) {
+            return response()->json($this->responseBuilder->resError("You are not permitted to do this operation", 401, "01"));
         }
-        dd('heto?');
         $input = $request->all();
         // TODO validate here
-
-        if(Auth::user()->cant('manage-other', Post::class) && Auth::user()->cant('update', $post)) {
-            abort(401);
-        }
 
         DB::beginTransaction();
         try {
@@ -76,7 +67,7 @@ class PostController extends Controller
     public function destroy(Request $request, Post $post)
     {
         if(Auth::user()->cant('delete', Post::class)) {
-            abort(401);
+            return response()->json($this->responseBuilder->resError("You are not permitted to do this operation", 401, "01"));
         }
 
         DB::beginTransaction();
