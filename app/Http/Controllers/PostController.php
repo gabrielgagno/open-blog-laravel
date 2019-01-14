@@ -28,6 +28,10 @@ class PostController extends Controller
 
         // TODO validate here
 
+        if(Auth::user()->cant('manage-other', Post::class) && Auth::user()->id != $input['user_id']) {
+            abort(401);
+        }
+
         if($input['status'] == 'published') {
             $input['published_at'] = date('Y-m-d H:i:s');
         }
@@ -49,8 +53,13 @@ class PostController extends Controller
         if(Auth::user()->cant('update', Post::class)) {
             abort(401);
         }
+        dd('heto?');
         $input = $request->all();
         // TODO validate here
+
+        if(Auth::user()->cant('manage-other', Post::class) && Auth::user()->cant('update', $post)) {
+            abort(401);
+        }
 
         DB::beginTransaction();
         try {
@@ -69,6 +78,7 @@ class PostController extends Controller
         if(Auth::user()->cant('delete', Post::class)) {
             abort(401);
         }
+
         DB::beginTransaction();
         try {
             $post->delete();

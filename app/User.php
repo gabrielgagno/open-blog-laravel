@@ -39,4 +39,16 @@ class User extends Authenticatable
     {
         return $this->belongsTo('App\Role');
     }
+
+    public function hasAccess($permission)
+    {
+        $userPermissions = $this->role->permissions;
+        foreach($userPermissions as $userPermission) {
+            if ($permission === $userPermission->permission_key) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

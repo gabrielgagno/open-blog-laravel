@@ -19,30 +19,27 @@ class PostPolicy
     {
         //
     }
-
+// TODO: call this->manageOther in these methods
     public function view(User $user) {
-        $permission = $user->role->permissions()->where('permission_key', 'view-posts')->first();
-        return isset($permission) ? true : false;
+        return $user->hasAccess('view-posts');
     }
 
     public function manageOther(User $user) {
-        $permission = $user->role->permissions()->where('permission_key', 'view-posts')->first();
-
-        if(isset($permission) && $user->role['role'] != 'user') {
-            return true;
-        }
-        return false;
+        return $user->role['role'] != 'user';
     }
 
     public function create(User $user) {
-        $userRole = $user->role;
+        $hasAccess = $user->hasAccess('create-posts');
+        return $hasAccess;
     }
 
     public function update(User $user, Post $post) {
-        $userRole = $user->role;
+        $hasAccess = $user->hasAccess('update-posts');
+        return $hasAccess;
     }
 
     public function delete(User $user, Post $post) {
-        $userRole = $user->role;
+        $hasAccess = $user->hasAccess('update-posts');
+        return $hasAccess;
     }
 }
