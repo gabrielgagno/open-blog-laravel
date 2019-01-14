@@ -5,11 +5,12 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Passport\HasApiTokens;
 use Post;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -17,7 +18,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'role_id'
     ];
 
     /**
@@ -33,4 +34,21 @@ class User extends Authenticatable
     {
         return $this->hasMany('App\Post');
     }
+
+    public function role()
+    {
+        return $this->belongsTo('App\Role');
+    }
+
+    public function hasAccess($permission)
+    {
+        $userPermissions = $this->role->permissions;
+        foreach($userPermissions as $userPermission) {
+            if ($permission === $userPermission->permission_key) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

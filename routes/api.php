@@ -17,11 +17,18 @@ Route::middleware('api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::middleware('api')->group(function() {
+Route::middleware('auth:api')->group(function() {
     Route::prefix('posts')->group(function() {
         Route::get('/', 'PostController@index');
         Route::post('/', 'PostController@store');
         Route::put('/{post}', 'PostController@update');
         Route::delete('/{post}', 'PostController@destroy');
+    });
+
+    Route::prefix('users')->group(function() {
+        Route::get('/', 'UserController@index');
+        Route::post('/', 'UserController@store');
+        Route::put('/{user}', 'UserController@update');
+        Route::delete('/{user}', 'UserController@destroy');
     });
 });
