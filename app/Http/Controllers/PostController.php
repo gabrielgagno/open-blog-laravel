@@ -6,17 +6,24 @@ use Illuminate\Http\Request;
 use App\Classes\ResponseBuilder;
 use App\Post;
 use DB;
+use Auth;
 
 class PostController extends Controller
 {
     public function index(Request $request)
     {
+        if(Auth::user()->cant('view', Post::class)) {
+            abort(401);
+        }
         $posts = Post::get();
         return response()->json($this->responseBuilder->resSuccess($posts->toArray()));
     }
 
     public function store(Request $request)
     {
+        if(Auth::user()->cant('create', Post::class)) {
+            abort(401);
+        }
         $input = $request->all();
 
         // TODO validate here
@@ -39,6 +46,9 @@ class PostController extends Controller
 
     public function update(Request $request, Post $post)
     {
+        if(Auth::user()->cant('update', Post::class)) {
+            abort(401);
+        }
         $input = $request->all();
         // TODO validate here
 
@@ -56,6 +66,9 @@ class PostController extends Controller
 
     public function destroy(Request $request, Post $post)
     {
+        if(Auth::user()->cant('delete', Post::class)) {
+            abort(401);
+        }
         DB::beginTransaction();
         try {
             $post->delete();

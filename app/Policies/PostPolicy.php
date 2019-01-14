@@ -20,7 +20,29 @@ class PostPolicy
         //
     }
 
-    public function viewPost(User $user, Post $post) {
-        
+    public function view(User $user) {
+        $permission = $user->role->permissions()->where('permission_key', 'view-posts')->first();
+        return isset($permission) ? true : false;
+    }
+
+    public function manageOther(User $user) {
+        $permission = $user->role->permissions()->where('permission_key', 'view-posts')->first();
+
+        if(isset($permission) && $user->role['role'] != 'user') {
+            return true;
+        }
+        return false;
+    }
+
+    public function create(User $user) {
+        $userRole = $user->role;
+    }
+
+    public function update(User $user, Post $post) {
+        $userRole = $user->role;
+    }
+
+    public function delete(User $user, Post $post) {
+        $userRole = $user->role;
     }
 }
