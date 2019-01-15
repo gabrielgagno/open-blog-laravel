@@ -16,6 +16,7 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         'App\Model' => 'App\Policies\ModelPolicy',
         'App\Post'  => 'App\Policies\PostPolicy',
+        'App\User'  => 'App\Policies\UserPolicy',
     ];
 
     /**
@@ -30,7 +31,11 @@ class AuthServiceProvider extends ServiceProvider
         Passport::routes();
 
         Gate::define('posts', 'App\Policies\PostPolicy', [
-            'manage-other', 'manageOther',
+            'manage-other' => 'manageOther',
+        ]);
+
+        Gate::define('user', 'App\Policies\UserPolicy', [
+            'manage-other' => 'manageOther',
         ]);
     }
 }
