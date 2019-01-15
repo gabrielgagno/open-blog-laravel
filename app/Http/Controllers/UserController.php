@@ -9,12 +9,19 @@ class UserController extends Controller
 {
     public function index()
     {
+        if(Auth::user()->cant('view', User::class)) {
+            return response()->json($this->responseBuilder->resError("You are not permitted to do this operation", 401, "01"));
+        }
         $users = User::get();
         return response()->json($this->responseBuilder->resSuccess($users->toArray()));
     }
 
     public function store(Request $request)
     {
+        if(Auth::user()->cant('create', User::class)) {
+            return response()->json($this->responseBuilder->resError("You are not permitted to do this operation", 401, "01"));
+        }
+
         $input = $request->all();
 
         // TODO validate here
@@ -34,6 +41,9 @@ class UserController extends Controller
 
     public function update(User $user, Request $request)
     {
+        if(Auth::user()->cant('update', $user)) {
+            return response()->json($this->responseBuilder->resError("You are not permitted to do this operation", 401, "01"));
+        }
         $input = $request->all();
         // TODO validate here
 
@@ -51,6 +61,9 @@ class UserController extends Controller
 
     public function destroy(User $user, Request $request)
     {
+        if(Auth::user()->cant('delete', $user)) {
+            return response()->json($this->responseBuilder->resError("You are not permitted to do this operation", 401, "01"));
+        }
         DB::beginTransaction();
         try {
             $user->delete();

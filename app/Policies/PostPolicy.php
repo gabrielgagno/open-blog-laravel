@@ -19,7 +19,7 @@ class PostPolicy
     {
         //
     }
-// TODO: call this->manageOther in these methods
+
     public function view(User $user) {
         return $user->hasAccess('view-posts');
     }
