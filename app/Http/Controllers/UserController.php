@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\User;
 use Auth;
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreUpdateUsers;
 
 class UserController extends Controller
 {
@@ -17,15 +18,15 @@ class UserController extends Controller
         return response()->json($this->responseBuilder->resSuccess($users->toArray()));
     }
 
-    public function store(Request $request)
+    public function store(StoreUpdateUsers $request)
     {
         if(Auth::user()->cant('create', User::class)) {
             return response()->json($this->responseBuilder->resError("You are not permitted to do this operation", 401, "01"));
         }
 
-        $input = $request->all();
+        $input = $request->validated();
 
-        // TODO validate here
+        $input['password'] = bcrypt($input['password']);
 
 
         DB::beginTransaction();
@@ -40,13 +41,14 @@ class UserController extends Controller
         return response()->json($this->responseBuilder->resSuccess($user->toArray()));
     }
 
-    public function update(User $user, Request $request)
+    public function update(User $user, StoreUpdateUsers $request)
     {
         if(Auth::user()->cant('update', $user)) {
             return response()->json($this->responseBuilder->resError("You are not permitted to do this operation", 401, "01"));
         }
-        $input = $request->all();
-        // TODO validate here
+        $input = $request->validated();
+
+        $input['password'] = bcrypt($input['password']);
 
         DB::beginTransaction();
         try {
