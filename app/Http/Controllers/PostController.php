@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Classes\ResponseBuilder;
 use App\Post;
+use App\Http\Requests\StoreUpdatePosts;
 use DB;
 use Auth;
 
@@ -19,15 +20,14 @@ class PostController extends Controller
         return response()->json($this->responseBuilder->resSuccess($posts->toArray()));
     }
 
-    public function store(Request $request)
+    public function store(StoreUpdatePosts $request)
     {
         if(Auth::user()->cant('create', Post::class)) {
             return response()->json($this->responseBuilder->resError("You are not permitted to do this operation", 401, "01"));
         }
-        $input = $request->all();
+        $input = $request->validated();
 
-        // TODO validate here
-
+        // input publishing data
         if($input['status'] == 'published') {
             $input['published_at'] = date('Y-m-d H:i:s');
         }
@@ -49,8 +49,13 @@ class PostController extends Controller
         if(Auth::user()->cant('update', $post)) {
             return response()->json($this->responseBuilder->resError("You are not permitted to do this operation", 401, "01"));
         }
-        $input = $request->all();
-        // TODO validate here
+        
+        $input = $request->validated();
+
+        // input publishing data
+        if($input['status'] == 'published') {
+            $input['published_at'] = date('Y-m-d H:i:s');
+        }
 
         DB::beginTransaction();
         try {
