@@ -16,7 +16,17 @@ class PostController extends Controller
         if(Auth::user()->cant('view', Post::class)) {
             return response()->json($this->responseBuilder->resError("You are not permitted to do this operation", 401, "01"));
         }
-        $posts = Post::get();
+
+        $validatedQuery = $request->query();
+        
+        // if the query has the filterable fields, then it must be searched (and operator)
+        $posts = Post::when(isset($validatedQuery['published_date_from']), function($query) use ($validatedQuery) {
+            return $query->whereBetween('published_date',
+            [$validatedQuery['published_date_from'], $validatedQuery['published_date_to']]);
+        })->when(isset($validatedQuery['category']), function($query) use ($validatedQuery) {
+            return $query->where('category', $validatedQuery['category']);
+        })->get();
+
         return response()->json($this->responseBuilder->resSuccess($posts->toArray()));
     }
 
