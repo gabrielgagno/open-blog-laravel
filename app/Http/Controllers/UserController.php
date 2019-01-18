@@ -14,7 +14,9 @@ class UserController extends Controller
         if(Auth::user()->cant('view', User::class)) {
             return response()->json($this->responseBuilder->resError("You are not permitted to do this operation", 401, "01"));
         }
+        
         $users = User::get();
+        
         return response()->json($this->responseBuilder->resSuccess($users->toArray()));
     }
 
