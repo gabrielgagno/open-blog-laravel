@@ -20,7 +20,7 @@ class ViewPostsTest extends TestCase
 
     public function testUserGet()
     {
-        $response = $this->json('GET', '/posts');
+        $response = $this->json('GET', 'api/posts');
 
         $response->assertStatus(200);
     }
