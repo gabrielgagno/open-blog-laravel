@@ -33,6 +33,13 @@ class PostPolicy
         return $hasAccess;
     }
 
+    public function createForOtherUser(User $user, Post $post) {
+        if($this->manageOther($user)) {
+            return true;
+        }
+        return $user->id == $post->user_id;
+    }
+
     public function update(User $user, Post $post) {
         $hasAccess = $user->hasAccess('update-posts');
         if($this->manageOther($user)) {
