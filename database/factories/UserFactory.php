@@ -24,6 +24,13 @@ $factory->define(User::class, function (Faker $faker) {
     ];
 });
 
+$factory->afterCreating(User::class, function ($user, $faker) {
+    $user->posts()->saveMany(factory(App\Post::class, 4)->states('published', 'category1')->make());
+    $user->posts()->saveMany(factory(App\Post::class, 4)->states('published', 'category2')->make());
+    $user->posts()->saveMany(factory(App\Post::class, 3)->states('draft', 'category2')->make());
+    $user->posts()->saveMany(factory(App\Post::class, 2)->states('archived', 'category1')->make());
+});
+
 $factory->state(User::class, 'user', [
     'role_id' => 1,
 ]);

@@ -68,12 +68,101 @@ class ViewPostsTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testPostsGetNoParams()
+    public function testPostsGetNoParamsUser()
     {
         Passport::actingAs($this->user, ['api']);
 
         $response = $this->json('GET', 'api/posts');
 
         $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'metadata',
+            'data'
+        ]);
+        $response->assertJsonCount(13, 'data');
+    }
+
+    public function testPostsGetNoParamsManager()
+    {
+        Passport::actingAs($this->manager, ['api']);
+
+        $response = $this->json('GET', 'api/posts');
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'metadata',
+            'data'
+        ]);
+        $response->assertJsonCount(52, 'data');
+    }
+
+    public function testPostsGetCategory1Param()
+    {
+        Passport::actingAs($this->user, ['api']);
+
+        $response = $this->json('GET', 'api/posts?category=category1');
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'metadata',
+            'data'
+        ]);
+        $response->assertJsonCount(6, 'data');
+    }
+
+    public function testPostsGetCategory2Param()
+    {
+        Passport::actingAs($this->user, ['api']);
+
+        $response = $this->json('GET', 'api/posts?category=category2');
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'metadata',
+            'data'
+        ]);
+        $response->assertJsonCount(7, 'data');
+    }
+
+    public function testPostsGetStatusPublished()
+    {
+        Passport::actingAs($this->user, ['api']);
+
+        $response = $this->json('GET', 'api/posts?status=published');
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'metadata',
+            'data'
+        ]);
+        $response->assertJsonCount(8, 'data');
+    }
+
+    public function testPostsGetStatusDraft()
+    {
+        Passport::actingAs($this->user, ['api']);
+
+        $response = $this->json('GET', 'api/posts?status=draft');
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'metadata',
+            'data'
+        ]);
+        $response->assertJsonCount(3, 'data');
+    }
+
+    public function testPostsGetStatusArchived()
+    {
+        Passport::actingAs($this->user, ['api']);
+
+        $response = $this->json('GET', 'api/posts?status=archived');
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'metadata',
+            'data'
+        ]);
+        $response->assertJsonCount(2, 'data');
     }
 }
