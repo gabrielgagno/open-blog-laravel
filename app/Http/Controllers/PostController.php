@@ -25,6 +25,8 @@ class PostController extends Controller
             [$validatedQuery['published_date_from'], $validatedQuery['published_date_to']]);
         })->when(isset($validatedQuery['category']), function($query) use ($validatedQuery) {
             return $query->where('category', $validatedQuery['category']);
+        })->when(isset($validatedQuery['status']), function($query) use ($validatedQuery) {
+            return $query->where('status', $validatedQuery['status']);
         })->get();
 
         return response()->json($this->responseBuilder->resSuccess($posts->toArray()));
