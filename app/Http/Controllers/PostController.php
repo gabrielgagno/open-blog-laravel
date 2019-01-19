@@ -18,6 +18,9 @@ class PostController extends Controller
         }
 
         $validatedQuery = $request->query();
+
+        // determine role of user
+        $userRole = Auth::user()->role->role;
         
         // if the query has the filterable fields, then it must be searched (and operator)
         $posts = Post::when(isset($validatedQuery['published_date_from']), function($query) use ($validatedQuery) {
@@ -27,6 +30,9 @@ class PostController extends Controller
             return $query->where('category', $validatedQuery['category']);
         })->when(isset($validatedQuery['status']), function($query) use ($validatedQuery) {
             return $query->where('status', $validatedQuery['status']);
+        })->when($userRole == 'user', function($query) {
+            // if the user is a non-admin role, user can only view their own posts
+            return $query->where('user_id', Auth::user()->id);
         })->get();
 
         return response()->json($this->responseBuilder->resSuccess($posts->toArray()));
@@ -44,9 +50,14 @@ class PostController extends Controller
             $input['published_at'] = date('Y-m-d H:i:s');
         }
 
+        $post = Post::create($input);
+
+        if(Auth::user()->cant('create-for-other-users', $post)) {
+            return response()->json($this->responseBuilder->resError("You are not permitted to do this operation", 401, "01"));
+        }
         DB::beginTransaction();
         try {
-            $post = Post::create($input);
+            $post->save();
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
