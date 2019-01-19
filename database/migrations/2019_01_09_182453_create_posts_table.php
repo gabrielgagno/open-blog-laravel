@@ -20,7 +20,7 @@ class CreatePostsTable extends Migration
             $table->text('body');
             $table->string('tags');
             $table->string('status');
-            $table->dateTime('published_at');
+            $table->dateTime('published_at')->nullable();
             $table->timestamps();
         });
     }
