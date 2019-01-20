@@ -44,9 +44,9 @@ class UserPolicy
         return false;
     }
 
-    public function delete(User $user, Post $post) {
+    public function delete(User $user, User $userSubject) {
         $hasAccess = $user->hasAccess('delete-users');
-        if($user->can('manage-other')) {
+        if($this->manageOther($user)) {
             return $hasAccess;
         }
 
