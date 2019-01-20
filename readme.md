@@ -18,6 +18,11 @@ The application uses Laravel Passport for its application layer. Run the followi
 php artisan passport:install
 ```
 
+## Testing
+```
+vendor/bin/phpunit
+```
+
 ## Quick API Guide
 
 ## Notes
