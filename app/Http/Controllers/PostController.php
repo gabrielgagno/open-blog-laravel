@@ -24,7 +24,7 @@ class PostController extends Controller
         
         // if the query has the filterable fields, then it must be searched (and operator)
         $posts = Post::when(isset($validatedQuery['published_date_from']), function($query) use ($validatedQuery) {
-            return $query->whereBetween('published_date',
+            return $query->whereBetween('published_at',
             [$validatedQuery['published_date_from'], $validatedQuery['published_date_to']]);
         })->when(isset($validatedQuery['category']), function($query) use ($validatedQuery) {
             return $query->where('category', $validatedQuery['category']);
