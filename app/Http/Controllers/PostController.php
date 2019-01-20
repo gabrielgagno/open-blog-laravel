@@ -66,7 +66,7 @@ class PostController extends Controller
         return response()->json($this->responseBuilder->resSuccess($post->toArray()));
     }
 
-    public function update(Request $request, Post $post)
+    public function update(StoreUpdatePosts $request, Post $post)
     {
         if(Auth::user()->cant('update', $post)) {
             return response()->json($this->responseBuilder->resError("You are not permitted to do this operation", 401, "01"), 401);

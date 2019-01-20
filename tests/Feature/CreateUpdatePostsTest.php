@@ -17,6 +17,8 @@ class CreateUpdatePostsTest extends TestCase
     private $user2;
     private $manager;
     private $admin;
+    private $postUser;
+    private $postUser2;
 
     public function setUp()
     {
@@ -32,7 +34,8 @@ class CreateUpdatePostsTest extends TestCase
         $this->manager = factory(User::class)->states('manager')->create();
         $this->admin = factory(User::class)->states('admin')->create();
 
-        
+        $this->postUser = $this->user->posts()->first();
+        $this->postUser2 = $this->user2->posts()->first();
     }
 
     public function testCreatePostUnauthenticated()
@@ -127,6 +130,115 @@ class CreateUpdatePostsTest extends TestCase
     {
         Passport::actingAs($this->admin, ['api']);
         $response = $this->json('POST', 'api/posts', [
+            'title' => 'create test',
+            'body'  => 'body test',
+            'status' => 'draft',
+            'user_id' => $this->user2->id,
+            'category' => 'samplecat',
+        ]);
+
+        $response->assertStatus(200);
+    }
+
+    public function testUpdatePostUnauthenticated()
+    {
+        $id = $this->postUser->id;
+        $response = $this->json('PUT', "api/posts/$id");
+
+        $response->assertStatus(401);
+    }
+
+    public function testUpdatePostAuthenticated()
+    {
+        Passport::actingAs($this->user, ['api']);
+        $id = $this->postUser->id;
+        $response = $this->json('PUT', "api/posts/$id", [
+            'title' => 'create test',
+            'body'  => 'body test',
+            'status' => 'draft',
+            'user_id' => $this->user->id,
+            'category' => 'samplecat',
+        ]);
+        $response->assertStatus(200);
+    }
+
+    public function testUpdatePostWithoutTitle()
+    {
+        Passport::actingAs($this->user, ['api']);
+        $id = $this->postUser->id;
+        $response = $this->json('PUT', "api/posts/$id", [
+            'body'  => 'body test',
+            'status' => 'draft',
+            'user_id' => $this->user->id,
+            'category' => 'samplecat',
+        ]);
+
+        $response->assertStatus(422);
+    }
+
+    public function testUpdatePostWithoutBody()
+    {
+        Passport::actingAs($this->user, ['api']);
+        $id = $this->postUser->id;
+        $response = $this->json('PUT', "api/posts/$id", [
+            'title' => 'test',
+            'status' => 'draft',
+            'user_id' => $this->user->id,
+            'category' => 'samplecat',
+        ]);
+
+        $response->assertStatus(422);
+    }
+
+    public function testUpdatePostWithoutStatus()
+    {
+        Passport::actingAs($this->user, ['api']);
+        $id = $this->postUser->id;
+        $response = $this->json('PUT', "api/posts/$id", [
+            'title' => 'title',
+            'body'  => 'body test',
+            'user_id' => $this->user->id,
+            'category' => 'samplecat',
+        ]);
+
+        $response->assertStatus(422);
+    }
+
+    public function testUpdatePostDifferentUserIdRoleUser()
+    {
+        Passport::actingAs($this->user, ['api']);
+        $id = $this->postUser2->id;
+        $response = $this->json('PUT', "api/posts/$id", [
+            'title' => 'create test',
+            'body'  => 'body test',
+            'status' => 'draft',
+            'user_id' => $this->user2->id,
+            'category' => 'samplecat',
+        ]);
+
+        $response->assertStatus(401);
+    }
+
+    public function testUpdatePostDifferentUserIdRoleManager()
+    {
+        Passport::actingAs($this->manager, ['api']);
+        $id = $this->postUser->id;
+        $response = $this->json('PUT', "api/posts/$id", [
+            'title' => 'create test',
+            'body'  => 'body test',
+            'status' => 'draft',
+            'user_id' => $this->user->id,
+            'category' => 'samplecat',
+        ]);
+
+        $response->assertStatus(200);
+    }
+
+    public function testUpdatePostDifferentUserIdRoleAdmin()
+    {
+        Passport::actingAs($this->admin, ['api']);
+        $id = $this->postUser->id;
+        $response = $this->json('PUT', "api/posts/$id", [
             'title' => 'create test',
             'body'  => 'body test',
             'status' => 'draft',
