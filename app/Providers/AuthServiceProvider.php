@@ -32,7 +32,7 @@ class AuthServiceProvider extends ServiceProvider
 
         Gate::define('posts', 'App\Policies\PostPolicy', [
             'manage-other' => 'manageOther',
-            'create-for-other-users' => 'createForOtherUser'
+            'create-for-other-user' => 'createForOtherUser'
         ]);
 
         Gate::define('user', 'App\Policies\UserPolicy', [

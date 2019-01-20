@@ -25,11 +25,11 @@ class PostPolicy
     }
 
     public function manageOther(User $user) {
-        return $user->role['role'] != 'user';
+        return $user->role->role != "user";
     }
 
     public function create(User $user) {
-        $hasAccess = $user->hasAccess('create-posts');
+        $hasAccess = $user->hasAccess('create-post');
         return $hasAccess;
     }
 

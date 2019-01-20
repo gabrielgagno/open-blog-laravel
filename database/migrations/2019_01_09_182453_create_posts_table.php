@@ -18,7 +18,7 @@ class CreatePostsTable extends Migration
             $table->integer('user_id')->references('id')->on('users');
             $table->string('title');
             $table->text('body');
-            $table->string('tags');
+            $table->string('tags')->nullable();
             $table->string('status');
             $table->dateTime('published_at')->nullable();
             $table->timestamps();

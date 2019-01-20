@@ -14,7 +14,7 @@ class PostController extends Controller
     public function index(Request $request)
     {
         if(Auth::user()->cant('view', Post::class)) {
-            return response()->json($this->responseBuilder->resError("You are not permitted to do this operation", 401, "01"));
+            return response()->json($this->responseBuilder->resError("You are not permitted to do this operation", 401, "01"), 401);
         }
 
         $validatedQuery = $request->query();
@@ -41,7 +41,7 @@ class PostController extends Controller
     public function store(StoreUpdatePosts $request)
     {
         if(Auth::user()->cant('create', Post::class)) {
-            return response()->json($this->responseBuilder->resError("You are not permitted to do this operation", 401, "01"));
+            return response()->json($this->responseBuilder->resError("You are not permitted to do this operation", 401, "01"), 401);
         }
         $input = $request->validated();
 
@@ -51,9 +51,8 @@ class PostController extends Controller
         }
 
         $post = Post::create($input);
-
-        if(Auth::user()->cant('create-for-other-users', $post)) {
-            return response()->json($this->responseBuilder->resError("You are not permitted to do this operation", 401, "01"));
+        if(Auth::user()->cant('create-for-other-user', $post)) {
+            return response()->json($this->responseBuilder->resError("You are not permitted to do this operation", 401, "01"), 401);
         }
         DB::beginTransaction();
         try {
@@ -61,7 +60,7 @@ class PostController extends Controller
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
-            return response()->json($this->responseBuilder->resError('Error in saving resource', 500, '00'));
+            return response()->json($this->responseBuilder->resError('Error in saving resource', 500, '00'), 500);
         }
 
         return response()->json($this->responseBuilder->resSuccess($post->toArray()));
@@ -70,7 +69,7 @@ class PostController extends Controller
     public function update(Request $request, Post $post)
     {
         if(Auth::user()->cant('update', $post)) {
-            return response()->json($this->responseBuilder->resError("You are not permitted to do this operation", 401, "01"));
+            return response()->json($this->responseBuilder->resError("You are not permitted to do this operation", 401, "01"), 401);
         }
         
         $input = $request->validated();
@@ -86,7 +85,7 @@ class PostController extends Controller
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
-            return response()->json($this->responseBuilder->resError('Error in saving resource', 500, '00'));
+            return response()->json($this->responseBuilder->resError('Error in saving resource', 500, '00'), 500);
         }
 
         return response()->json($this->responseBuilder->resSuccess($post->toArray()));
@@ -95,7 +94,7 @@ class PostController extends Controller
     public function destroy(Request $request, Post $post)
     {
         if(Auth::user()->cant('delete', Post::class)) {
-            return response()->json($this->responseBuilder->resError("You are not permitted to do this operation", 401, "01"));
+            return response()->json($this->responseBuilder->resError("You are not permitted to do this operation", 401, "01"), 401);
         }
 
         DB::beginTransaction();
@@ -104,7 +103,7 @@ class PostController extends Controller
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
-            return response()->json($this->responseBuilder->resError('Error in deleting resource', 500, '00'));
+            return response()->json($this->responseBuilder->resError('Error in deleting resource', 500, '00'), 500);
         }
 
         return response()->json($this->responseBuilder->resSuccess(['message' => 'resource successfully deleted']));

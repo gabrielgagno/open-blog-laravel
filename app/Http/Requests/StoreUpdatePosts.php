@@ -35,6 +35,9 @@ class StoreUpdatePosts extends FormRequest
                     'archived',
                 ]),
             ],
+            'user_id' => 'required',
+            'tags' => 'nullable',
+            'category' => 'nullable'
         ];
     }
 }
