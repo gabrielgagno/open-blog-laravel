@@ -50,8 +50,8 @@ class PostPolicy
     }
 
     public function delete(User $user, Post $post) {
-        $hasAccess = $user->hasAccess('delete-posts');
-        if($user->can('manage-other')) {
+        $hasAccess = $user->hasAccess('delete-post');
+        if($this->manageOther($user)) {
             return $hasAccess;
         }
 

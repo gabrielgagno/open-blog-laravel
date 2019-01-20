@@ -91,9 +91,9 @@ class PostController extends Controller
         return response()->json($this->responseBuilder->resSuccess($post->toArray()));
     }
 
-    public function destroy(Request $request, Post $post)
+    public function destroy(Post $post)
     {
-        if(Auth::user()->cant('delete', Post::class)) {
+        if(Auth::user()->cant('delete', $post)) {
             return response()->json($this->responseBuilder->resError("You are not permitted to do this operation", 401, "01"), 401);
         }
 
