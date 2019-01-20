@@ -24,12 +24,15 @@ class UserPolicy
     }
 
     public function manageOther(User $user) {
-        return $user->role['role'] != 'admin';
+        return $user->role->role == 'admin';
     }
 
     public function create(User $user) {
         $hasAccess = $user->hasAccess('create-users');
-        return $hasAccess;
+        if($this->manageOther($user)) {
+            return $hasAccess;
+        }
+        return false;
     }
 
     public function update(User $user, User $userSubject) {

@@ -25,11 +25,11 @@ class PostPolicy
     }
 
     public function manageOther(User $user) {
-        return $user->role['role'] != 'user';
+        return $user->role->role != "user";
     }
 
     public function create(User $user) {
-        $hasAccess = $user->hasAccess('create-posts');
+        $hasAccess = $user->hasAccess('create-post');
         return $hasAccess;
     }
 
@@ -50,8 +50,8 @@ class PostPolicy
     }
 
     public function delete(User $user, Post $post) {
-        $hasAccess = $user->hasAccess('delete-posts');
-        if($user->can('manage-other')) {
+        $hasAccess = $user->hasAccess('delete-post');
+        if($this->manageOther($user)) {
             return $hasAccess;
         }
 

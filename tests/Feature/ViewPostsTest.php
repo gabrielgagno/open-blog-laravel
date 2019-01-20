@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\User;
 use Laravel\Passport\Passport;
+use Carbon\Carbon;
 
 class ViewPostsTest extends TestCase
 {
@@ -156,6 +157,8 @@ class ViewPostsTest extends TestCase
     {
         Passport::actingAs($this->user, ['api']);
 
+        $dateFrom = date('Y-m-d');
+
         $response = $this->json('GET', 'api/posts?status=archived');
 
         $response->assertStatus(200);
@@ -164,5 +167,40 @@ class ViewPostsTest extends TestCase
             'data'
         ]);
         $response->assertJsonCount(2, 'data');
+    }
+
+    public function testPostsGetPubishedAtWithinRange()
+    {
+        Passport::actingAs($this->user, ['api']);
+
+        $currentDate = now();
+        $dateFrom = now()->subDays(8)->toDateString();
+        $dateTo = now()->addDays(8)->toDateString();
+
+        $response = $this->json('GET', "api/posts?published_date_from=$dateFrom&published_date_to=$dateTo");
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'metadata',
+            'data'
+        ]);
+        $response->assertJsonCount(8, 'data');
+    }
+
+    public function testPostsGetPubishedAtNotInRange()
+    {
+        Passport::actingAs($this->user, ['api']);
+
+        $currentDate = now();
+        $dateFrom = now()->subDays(8)->toDateString();
+        $dateTo = now()->subDays(4)->toDateString();
+        $response = $this->json('GET', "api/posts?published_date_from=$dateFrom&published_date_to=$dateTo");
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'metadata',
+            'data'
+        ]);
+        $response->assertJsonCount(0, 'data');
     }
 }
